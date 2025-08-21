@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, User } from 'firebase/auth';
 import { 
     getFirestore,
     doc,
@@ -14,20 +14,6 @@ import {
     serverTimestamp
 } from 'firebase/firestore';
 
-// --- VERCEL DEPLOYMENT SETUP ---
-// 1. Create a file named .env.local in the root of your project.
-// 2. Add your Firebase configuration to the .env.local file like this:
-//    NEXT_PUBLIC_API_KEY="YOUR_API_KEY"
-//    NEXT_PUBLIC_AUTH_DOMAIN="YOUR_AUTH_DOMAIN"
-//    NEXT_PUBLIC_PROJECT_ID="YOUR_PROJECT_ID"
-//    NEXT_PUBLIC_STORAGE_BUCKET="YOUR_STORAGE_BUCKET"
-//    NEXT_PUBLIC_MESSAGING_SENDER_ID="YOUR_MESSAGING_SENDER_ID"
-//    NEXT_PUBLIC_APP_ID="YOUR_APP_ID"
-//    NEXT_PUBLIC_MEASUREMENT_ID="YOUR_MEASUREMENT_ID"
-//
-// 3. In your Vercel project settings, go to "Environment Variables" and
-//    add the same key-value pairs.
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -38,7 +24,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
 };
 
-// Initialize Firebase for SSR and SSG, prevents re-initialization error
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -46,7 +31,7 @@ const db = getFirestore(app);
 export default function App() {
     const [view, setView] = useState('home');
     const [gameCode, setGameCode] = useState('');
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isHost, setIsHost] = useState(false);
 
     useEffect(() => {
