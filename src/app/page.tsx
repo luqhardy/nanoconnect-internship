@@ -388,3 +388,28 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
     </div>
   );
 }
+/* -------------------- LobbyView -------------------- */
+interface LobbyViewProps {
+  setView: React.Dispatch<React.SetStateAction<string>>;
+  gameCode: string;
+  isHost: boolean;
+}
+
+function LobbyView({ setView, gameCode, isHost }: LobbyViewProps) {
+  return (
+    <div className="text-center">
+      <h2 className="text-2xl font-bold mb-4">ゲームロビー</h2>
+      <p className="mb-2">ゲームコード: <span className="font-mono">{gameCode}</span></p>
+      {isHost ? (
+        <button
+          onClick={() => setView('play')}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+        >
+          ゲーム開始
+        </button>
+      ) : (
+        <p className="text-gray-500">ホストがゲームを開始するのを待っています...</p>
+      )}
+    </div>
+  );
+}
