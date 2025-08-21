@@ -1,8 +1,9 @@
 "use client"
 import React, { useState, useEffect, useRef } from 'react';
+
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { 
+import { getAuth, signInAnonymously, onAuthStateChanged, type User } from 'firebase/auth';
+import {
     getFirestore,
     doc,
     setDoc,
@@ -11,7 +12,7 @@ import {
     onSnapshot,
     collection,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -31,22 +32,22 @@ const db = getFirestore(app);
 export default function App() {
     const [view, setView] = useState('home');
     const [gameCode, setGameCode] = useState<string>('');
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isHost, setIsHost] = useState(false);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-                setUser(currentUser);
-            } else {
-                  signInAnonymously(auth).catch((error) => {
-                    console.error("Anonymous sign-in failed:", error);
-                });
-            }
-        });
-        return () => unsubscribe();
-    }, []);
-    
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    if (currentUser) {
+      setUser(currentUser);
+    } else {
+      signInAnonymously(auth).catch((error) => {
+        console.error("Anonymous sign-in failed:", error);
+      });
+    }
+  });
+  return () => unsubscribe();
+}, []);
+
     const renderView = () => {
         if (!user) {
             return <div className="text-center">接続中...</div>;
@@ -76,7 +77,11 @@ export default function App() {
     );
 }
 
-function HomeView({ setView }) {
+interface HomeViewProps {
+    setView: React.Dispatch<React.SetStateAction<string>>;
+}
+
+function HomeView({ setView }: HomeViewProps) {
     return (
         <div className="text-center">
             <h1 className="text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
@@ -99,8 +104,22 @@ function HomeView({ setView }) {
     );
 }
 
-function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
-    const [questions, setQuestions] = useState([
+interface Question {
+    text: string;
+    answers: string[];
+    correctAnswer: number;
+    points: number;
+    time: number;
+}
+
+interface CreateQuizViewProps {
+    setView: React.Dispatch<React.SetStateAction<string>>;
+    setGameCode: React.Dispatch<React.SetStateAction<string>>;
+    user: User;
+    setIsHost: React.Dispatch<React.SetStateAction<boolean>>;
+}
+function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizViewProps) {
+    const [questions, setQuestions] = useState<Question[]>([
         {
             text: '好きな恐竜を教えてください',
             answers: ['ティラノサウルス', 'スピノサウルス', 'トリケラトプス', 'プテラノドン'],
@@ -123,17 +142,21 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
         setSelectedQuestionIndex(questions.length);
     };
     
-    const handleUpdateQuestion = (index, field, value) => {
-        const newQuestions = [...questions];
-        if (field.startsWith('answer-')) {
-            const answerIndex = parseInt(field.split('-')[1]);
-            newQuestions[index].answers[answerIndex] = value;
-        } else {
-            newQuestions[index][field] = value;
-        }
-        setQuestions(newQuestions);
-    };
+    const handleUpdateQuestion = (index: number, field: string, value: string | number) => {
+        setQuestions(currentQuestions =>
+            currentQuestions.map((q, i) => {
+                if (i !== index) return q;
 
+                if (field.startsWith('answer-')) {
+                    const answerIndex = parseInt(field.split('-')[1], 10);
+                    const newAnswers = [...q.answers];
+                    newAnswers[answerIndex] = String(value);
+                    return { ...q, answers: newAnswers };
+                }
+                return { ...q, [field]: value };
+            })
+        );
+    };
     const handleStartQuiz = async () => {
         if (!user) {
             alert("ユーザー情報が読み込まれていません。");
@@ -217,7 +240,14 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
     );
 }
 
-function JoinGameView({ setView, setGameCode, user, setIsHost }) {
+interface JoinGameViewProps {
+    setView: React.Dispatch<React.SetStateAction<string>>;
+    setGameCode: React.Dispatch<React.SetStateAction<string>>;
+    user: User;
+    setIsHost: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewProps) {
     const [inputCode, setInputCode] = useState('');
     const [error, setError] = useState('');
 
@@ -272,7 +302,14 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }) {
     );
 }
 
-function LobbyView({ setView, gameCode, isHost }) {
+interface LobbyViewProps {
+    setView: React.Dispatch<React.SetStateAction<string>>;
+    gameCode: string;
+    user: User;
+    isHost: boolean;
+}
+
+function LobbyView({ setView, gameCode, user, isHost }: LobbyViewProps) {
     const [players, setPlayers] = useState([]);
     const [gameData, setGameData] = useState(null);
 
@@ -330,7 +367,14 @@ function LobbyView({ setView, gameCode, isHost }) {
     );
 }
 
-function PlayerView({ gameCode, user, isHost, setView }) {
+interface PlayerViewProps {
+    gameCode: string;
+    user: User;
+    isHost: boolean;
+    setView: React.Dispatch<React.SetStateAction<string>>;
+}
+
+function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
     const [game, setGame] = useState(null);
     const [quiz, setQuiz] = useState(null);
     const [timeLeft, setTimeLeft] = useState(null);
