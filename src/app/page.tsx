@@ -287,7 +287,7 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value)}
                     placeholder="ABCXYZ"
-                    maxLength="6"
+                    maxLength={6}
                     className="w-full bg-white text-gray-500 text-center text-6xl font-bold p-6 rounded-lg mb-6 shadow-inner outline-none focus:ring-4 ring-blue-300 uppercase"
                 />
                 {error && <p className="text-red-500 mb-4">{error}</p>}
