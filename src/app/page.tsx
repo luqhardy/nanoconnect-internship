@@ -76,7 +76,7 @@ export default function App() {
     );
 }
 
-function HomeView({ setView }) {
+function HomeView({ setView }: { setView: (view: string) => void }) {
     return (
         <div className="text-center">
             <h1 className="text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
@@ -99,7 +99,14 @@ function HomeView({ setView }) {
     );
 }
 
-function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
+interface CreateQuizViewProps {
+    setView: (view: string) => void;
+    setGameCode: (code: string) => void;
+    user: User;
+    setIsHost: (isHost: boolean) => void;
+}
+
+function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizViewProps) {
     const [questions, setQuestions] = useState([
         {
             text: '好きな恐竜を教えてください',
@@ -123,15 +130,17 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
         setSelectedQuestionIndex(questions.length);
     };
     
-    const handleUpdateQuestion = (index, field, value) => {
+    const handleUpdateQuestion = (index: number, field: string, value: string | number) => {
         const newQuestions = [...questions];
-        if (field.startsWith('answer-')) {
-            const answerIndex = parseInt(field.split('-')[1]);
-            newQuestions[index].answers[answerIndex] = value;
-        } else {
-            newQuestions[index][field] = value;
+        if (typeof newQuestions[index][field] !== 'undefined') {
+            if (field.startsWith('answer-')) {
+                const answerIndex = parseInt(field.split('-')[1]);
+                newQuestions[index].answers[answerIndex] = String(value);
+            } else {
+                newQuestions[index][field] = value;
+            }
+            setQuestions(newQuestions);
         }
-        setQuestions(newQuestions);
     };
 
     const handleStartQuiz = async () => {
@@ -217,11 +226,18 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }) {
     );
 }
 
-function JoinGameView({ setView, setGameCode, user, setIsHost }) {
+interface JoinGameViewProps {
+    setView: (view: string) => void;
+    setGameCode: (code: string) => void;
+    user: User;
+    setIsHost: (isHost: boolean) => void;
+}
+
+function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewProps) {
     const [inputCode, setInputCode] = useState('');
     const [error, setError] = useState('');
 
-    const handleJoin = async (e) => {
+    const handleJoin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         const code = inputCode.trim().toUpperCase();
@@ -257,7 +273,7 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }) {
                     value={inputCode}
                     onChange={(e) => setInputCode(e.target.value)}
                     placeholder="ABCXYZ"
-                    maxLength="6"
+                    maxLength={6}
                     className="w-full bg-white text-gray-500 text-center text-6xl font-bold p-6 rounded-lg mb-6 shadow-inner outline-none focus:ring-4 ring-blue-300 uppercase"
                 />
                 {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -272,9 +288,16 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }) {
     );
 }
 
-function LobbyView({ setView, gameCode, user, isHost }) {
-    const [players, setPlayers] = useState([]);
-    const [gameData, setGameData] = useState(null);
+interface LobbyViewProps {
+    setView: (view: string) => void;
+    gameCode: string;
+    user: User;
+    isHost: boolean;
+}
+
+function LobbyView({ setView, gameCode, user, isHost }: LobbyViewProps) {
+    const [players, setPlayers] = useState<{uid: string, name: string, score: number}[]>([]);
+    const [gameData, setGameData] = useState<any>(null);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
@@ -330,14 +353,21 @@ function LobbyView({ setView, gameCode, user, isHost }) {
     );
 }
 
-function PlayerView({ gameCode, user, isHost, setView }) {
-    const [game, setGame] = useState(null);
-    const [quiz, setQuiz] = useState(null);
-    const [timeLeft, setTimeLeft] = useState(null);
+interface PlayerViewProps {
+    gameCode: string;
+    user: User;
+    isHost: boolean;
+    setView: (view: string) => void;
+}
+
+function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
+    const [game, setGame] = useState<any>(null);
+    const [quiz, setQuiz] = useState<any>(null);
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [hasAnswered, setHasAnswered] = useState(false);
     
-    const timerRef = useRef(null);
-    const quizRef = useRef(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const quizRef = useRef<any>(null);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
@@ -366,7 +396,7 @@ function PlayerView({ gameCode, user, isHost, setView }) {
                 setTimeLeft(currentQ.time);
             }
             
-            if (gameData.state === 'finished') {
+            if (gameData.state === 'finished' && gameData.players[user.uid]) {
                  alert(`クイズ終了！最終スコアは ${gameData.players[user.uid].score}点です。`);
                  setView('home');
             }
@@ -384,21 +414,25 @@ function PlayerView({ gameCode, user, isHost, setView }) {
             setHasAnswered(true);
         }
         
-        return () => clearTimeout(timerRef.current);
+        return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+        };
     }, [timeLeft]);
 
-    const handleAnswer = async (answerIndex) => {
-        if (hasAnswered) return;
+    const handleAnswer = async (answerIndex: number) => {
+        if (hasAnswered || !quiz || !game) return;
         setHasAnswered(true);
 
         const currentQuestion = quiz.questions[game.currentQuestionIndex];
         let pointsAwarded = 0;
-        if (answerIndex === currentQuestion.correctAnswer) {
+        if (answerIndex === currentQuestion.correctAnswer && timeLeft) {
             pointsAwarded = Math.round(currentQuestion.points * (timeLeft / currentQuestion.time));
         }
         
         const gameDocRef = doc(db, "games", gameCode);
-        const currentScore = game.players[user.uid].score || 0;
+        const currentScore = game.players[user.uid]?.score || 0;
         
         await updateDoc(gameDocRef, {
             [`players.${user.uid}.score`]: currentScore + pointsAwarded
@@ -406,7 +440,7 @@ function PlayerView({ gameCode, user, isHost, setView }) {
     };
 
     const handleNextQuestion = async () => {
-        if (!isHost) return;
+        if (!isHost || !quiz) return;
 
         const nextIndex = game.currentQuestionIndex + 1;
         const gameDocRef = doc(db, "games", gameCode);
@@ -437,7 +471,7 @@ function PlayerView({ gameCode, user, isHost, setView }) {
                 <div className="w-full max-w-3xl mx-auto">
                     <h3 className="text-xl text-gray-500 mb-4">回答選択肢：</h3>
                     <div className="grid grid-cols-1 gap-3 text-2xl text-gray-600">
-                        {currentQuestion.answers.map((answer, index) => (
+                        {currentQuestion.answers.map((answer: string, index: number) => (
                             <div key={index}>{answer}</div>
                         ))}
                     </div>
@@ -445,7 +479,7 @@ function PlayerView({ gameCode, user, isHost, setView }) {
             </div>
 
             <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ backgroundColor: '#bde0fe' }}>
-                {currentQuestion.answers.map((_, index) => (
+                {currentQuestion.answers.map((_: any, index: number) => (
                      <button
                         key={index}
                         onClick={() => handleAnswer(index)}
