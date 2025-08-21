@@ -13,6 +13,7 @@ import {
     collection,
     addDoc,
     serverTimestamp,
+    type Timestamp,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -383,12 +384,12 @@ interface Game {
     state: 'lobby' | 'in-progress' | 'finished';
     currentQuestionIndex: number;
     players: { [key: string]: Player };
-    createdAt: any; // Or import Timestamp from 'firebase/firestore'
+    createdAt: Timestamp;
 }
 
 interface Quiz {
     questions: Question[];
-    createdAt: any; // Or import Timestamp from 'firebase/firestore'
+    createdAt: Timestamp;
     hostId: string;
 }
 
