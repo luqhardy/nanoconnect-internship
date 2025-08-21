@@ -30,7 +30,7 @@ const db = getFirestore(app);
 
 export default function App() {
     const [view, setView] = useState('home');
-    const [gameCode, setGameCode] = useState('');
+    const [gameCode, setGameCode] = useState<string>('');
     const [user, setUser] = useState(null);
     const [isHost, setIsHost] = useState(false);
 
@@ -39,7 +39,7 @@ export default function App() {
             if (currentUser) {
                 setUser(currentUser);
             } else {
-                signInAnonymously(auth).catch((error) => {
+                  signInAnonymously(auth).catch((error) => {
                     console.error("Anonymous sign-in failed:", error);
                 });
             }
