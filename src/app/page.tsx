@@ -411,14 +411,14 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
                 return;
             }
 
-            const gameData = docSnap.data();
+            const gameData = docSnap.data() as Game;
             setGame(gameData);
 
             if (!quizRef.current && gameData.quizId) {
                 const quizDocRef = doc(db, "quizzes", gameData.quizId);
                 const quizDocSnap = await getDoc(quizDocRef);
                 if (quizDocSnap.exists()) {
-                    quizRef.current = quizDocSnap.data();
+                    quizRef.current = quizDocSnap.data() as Quiz;
                     setQuiz(quizRef.current);
                 }
             }
