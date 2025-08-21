@@ -272,7 +272,7 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }) {
     );
 }
 
-function LobbyView({ setView, gameCode, user, isHost }) {
+function LobbyView({ setView, gameCode, isHost }) {
     const [players, setPlayers] = useState([]);
     const [gameData, setGameData] = useState(null);
 
@@ -324,7 +324,7 @@ function LobbyView({ setView, gameCode, user, isHost }) {
                     ゲームを開始！
                 </button>
             ) : (
-                <p className="text-xl text-gray-600">ホストがゲームを開始するのを待っています...</p>
+                <p className="text-xl text-gray-600">ホストがゲームを開始するのを待っています...(user)</p>
             )}
         </div>
     );
