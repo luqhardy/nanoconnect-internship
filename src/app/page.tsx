@@ -305,20 +305,17 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
 interface LobbyViewProps {
     setView: React.Dispatch<React.SetStateAction<string>>;
     gameCode: string;
-    user: User;
     isHost: boolean;
 }
 
-function LobbyView({ setView, gameCode, user, isHost }: LobbyViewProps) {
-    const [players, setPlayers] = useState([]);
-    const [gameData, setGameData] = useState(null);
+function LobbyView({ setView, gameCode, isHost }: LobbyViewProps) {
+    const [players, setPlayers] = useState<any[]>([]);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
         const unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                setGameData(data);
                 setPlayers(Object.values(data.players || {}));
                 
                 if (data.state === 'in-progress') {
@@ -361,7 +358,7 @@ function LobbyView({ setView, gameCode, user, isHost }: LobbyViewProps) {
                     ゲームを開始！
                 </button>
             ) : (
-                <p className="text-xl text-gray-600">ホストがゲームを開始するのを待っています...(user)</p>
+                <p className="text-xl text-gray-600">ホストがゲームを開始するのを待っています...</p>
             )}
         </div>
     );
