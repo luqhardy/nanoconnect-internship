@@ -11,8 +11,38 @@ import {
     onSnapshot,
     collection,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    DocumentData
 } from 'firebase/firestore';
+
+// --- Type Definitions ---
+interface Question {
+    text: string;
+    answers: string[];
+    correctAnswer: number;
+    points: number;
+    time: number;
+}
+
+interface Quiz {
+    questions: Question[];
+    hostId: string;
+}
+
+interface Player {
+    uid: string;
+    name: string;
+    score: number;
+}
+
+interface Game {
+    quizId: string;
+    hostId: string;
+    state: 'lobby' | 'in-progress' | 'finished';
+    currentQuestionIndex: number;
+    players: { [key: string]: Player };
+}
+
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -58,7 +88,7 @@ export default function App() {
             case 'join':
                 return <JoinGameView setView={setView} setGameCode={setGameCode} user={user} setIsHost={setIsHost} />;
             case 'lobby':
-                return <LobbyView setView={setView} gameCode={gameCode} user={user} isHost={isHost} />;
+                return <LobbyView setView={setView} gameCode={gameCode} isHost={isHost} />;
             case 'play':
                 return <PlayerView gameCode={gameCode} user={user} isHost={isHost} setView={setView} />;
             case 'home':
@@ -107,7 +137,7 @@ interface CreateQuizViewProps {
 }
 
 function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizViewProps) {
-    const [questions, setQuestions] = useState([
+    const [questions, setQuestions] = useState<Question[]>([
         {
             text: '好きな恐竜を教えてください',
             answers: ['ティラノサウルス', 'スピノサウルス', 'トリケラトプス', 'プテラノドン'],
@@ -119,7 +149,7 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizVie
     const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
 
     const handleAddQuestion = () => {
-        const newQuestion = {
+        const newQuestion: Question = {
             text: '新しい問題',
             answers: ['回答1', '回答2', '回答3', '回答4'],
             correctAnswer: 0,
@@ -131,16 +161,27 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizVie
     };
     
     const handleUpdateQuestion = (index: number, field: string, value: string | number) => {
-        const newQuestions = [...questions];
-        if (typeof newQuestions[index][field] !== 'undefined') {
-            if (field.startsWith('answer-')) {
-                const answerIndex = parseInt(field.split('-')[1]);
-                newQuestions[index].answers[answerIndex] = String(value);
-            } else {
-                newQuestions[index][field] = value;
+        const newQuestions = questions.map((q, i) => {
+            if (i === index) {
+                const updatedQuestion = { ...q };
+                if (field.startsWith('answer-')) {
+                    const answerIndex = parseInt(field.split('-')[1]);
+                    const newAnswers = [...updatedQuestion.answers];
+                    newAnswers[answerIndex] = String(value);
+                    updatedQuestion.answers = newAnswers;
+                } else {
+                    const key = field as keyof Question;
+                    if (key === 'text') {
+                        updatedQuestion[key] = String(value);
+                    } else if (key === 'points' || key === 'time' || key === 'correctAnswer') {
+                        updatedQuestion[key] = Number(value);
+                    }
+                }
+                return updatedQuestion;
             }
-            setQuestions(newQuestions);
-        }
+            return q;
+        });
+        setQuestions(newQuestions);
     };
 
     const handleStartQuiz = async () => {
@@ -247,7 +288,7 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
         const gameDocSnap = await getDoc(gameDocRef);
 
         if (gameDocSnap.exists()) {
-            const playerInfo = {
+            const playerInfo: Player = {
                 uid: user.uid,
                 name: `プレイヤー${Math.floor(Math.random() * 1000)}`,
                 score: 0,
@@ -291,20 +332,17 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
 interface LobbyViewProps {
     setView: (view: string) => void;
     gameCode: string;
-    user: User;
     isHost: boolean;
 }
 
-function LobbyView({ setView, gameCode, user, isHost }: LobbyViewProps) {
-    const [players, setPlayers] = useState<{uid: string, name: string, score: number}[]>([]);
-    const [gameData, setGameData] = useState<any>(null);
+function LobbyView({ setView, gameCode, isHost }: LobbyViewProps) {
+    const [players, setPlayers] = useState<Player[]>([]);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
         const unsubscribe = onSnapshot(gameDocRef, (docSnap) => {
             if (docSnap.exists()) {
-                const data = docSnap.data();
-                setGameData(data);
+                const data = docSnap.data() as Game;
                 setPlayers(Object.values(data.players || {}));
                 
                 if (data.state === 'in-progress') {
@@ -361,13 +399,13 @@ interface PlayerViewProps {
 }
 
 function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
-    const [game, setGame] = useState<any>(null);
-    const [quiz, setQuiz] = useState<any>(null);
+    const [game, setGame] = useState<Game | null>(null);
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [hasAnswered, setHasAnswered] = useState(false);
     
     const timerRef = useRef<NodeJS.Timeout | null>(null);
-    const quizRef = useRef<any>(null);
+    const quizRef = useRef<Quiz | null>(null);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
@@ -378,14 +416,14 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
                 return;
             }
 
-            const gameData = docSnap.data();
+            const gameData = docSnap.data() as Game;
             setGame(gameData);
 
             if (!quizRef.current && gameData.quizId) {
                 const quizDocRef = doc(db, "quizzes", gameData.quizId);
                 const quizDocSnap = await getDoc(quizDocRef);
                 if (quizDocSnap.exists()) {
-                    quizRef.current = quizDocSnap.data();
+                    quizRef.current = quizDocSnap.data() as Quiz;
                     setQuiz(quizRef.current);
                 }
             }
@@ -440,7 +478,7 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
     };
 
     const handleNextQuestion = async () => {
-        if (!isHost || !quiz) return;
+        if (!isHost || !quiz || !game) return;
 
         const nextIndex = game.currentQuestionIndex + 1;
         const gameDocRef = doc(db, "games", gameCode);
@@ -479,7 +517,7 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
             </div>
 
             <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ backgroundColor: '#bde0fe' }}>
-                {currentQuestion.answers.map((_: any, index: number) => (
+                {currentQuestion.answers.map((_: string, index: number) => (
                      <button
                         key={index}
                         onClick={() => handleAnswer(index)}
