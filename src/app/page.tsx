@@ -251,7 +251,7 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
     const [inputCode, setInputCode] = useState('');
     const [error, setError] = useState('');
 
-    const handleJoin = async (e) => {
+    const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         const code = inputCode.trim().toUpperCase();
