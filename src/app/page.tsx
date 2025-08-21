@@ -59,7 +59,7 @@ useEffect(() => {
             case 'join':
                 return <JoinGameView setView={setView} setGameCode={setGameCode} user={user} setIsHost={setIsHost} />;
             case 'lobby':
-                return <LobbyView setView={setView} gameCode={gameCode} user={user} isHost={isHost} />;
+                return <LobbyView setView={setView} gameCode={gameCode} isHost={isHost} />;
             case 'play':
                 return <PlayerView gameCode={gameCode} user={user} isHost={isHost} setView={setView} />;
             case 'home':
@@ -302,6 +302,12 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
     );
 }
 
+interface Player {
+    uid: string;
+    name: string;
+    score: number;
+}
+
 interface LobbyViewProps {
     setView: React.Dispatch<React.SetStateAction<string>>;
     gameCode: string;
@@ -309,7 +315,7 @@ interface LobbyViewProps {
 }
 
 function LobbyView({ setView, gameCode, isHost }: LobbyViewProps) {
-    const [players, setPlayers] = useState<any[]>([]);
+    const [players, setPlayers] = useState<Player[]>([]);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
@@ -371,14 +377,29 @@ interface PlayerViewProps {
     setView: React.Dispatch<React.SetStateAction<string>>;
 }
 
+interface Game {
+    quizId: string;
+    hostId: string;
+    state: 'lobby' | 'in-progress' | 'finished';
+    currentQuestionIndex: number;
+    players: { [key: string]: Player };
+    createdAt: any; // Or import Timestamp from 'firebase/firestore'
+}
+
+interface Quiz {
+    questions: Question[];
+    createdAt: any; // Or import Timestamp from 'firebase/firestore'
+    hostId: string;
+}
+
 function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
-    const [game, setGame] = useState(null);
-    const [quiz, setQuiz] = useState(null);
-    const [timeLeft, setTimeLeft] = useState(null);
+    const [game, setGame] = useState<Game | null>(null);
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
+    const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [hasAnswered, setHasAnswered] = useState(false);
     
-    const timerRef = useRef(null);
-    const quizRef = useRef(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const quizRef = useRef<Quiz | null>(null);
 
     useEffect(() => {
         const gameDocRef = doc(db, "games", gameCode);
