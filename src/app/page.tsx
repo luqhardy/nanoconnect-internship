@@ -98,7 +98,7 @@ export default function App() {
     };
 
     return (
-        <div className="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center font-sans p-4">
+        <div className="bg-white text-gray-800 min-h-screen h-screen w-screen font-sans p-4">
             <div className="w-full max-w-5xl mx-auto">
                 {renderView()}
             </div>
@@ -108,7 +108,7 @@ export default function App() {
 
 function HomeView({ setView }: { setView: (view: string) => void }) {
     return (
-        <div className="text-center">
+        <div className="w-full h-full min-h-screen text-center">
             <h1 className="text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
             <p className="text-gray-500 mb-12">リアルタイムでクイズを作成して参加しよう</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -222,7 +222,7 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizVie
     const currentQuestion = questions[selectedQuestionIndex];
 
     return (
-        <div className="w-full mx-auto rounded-2xl shadow-2xl overflow-hidden">
+        <div className="w-full h-full min-h-screen">
              <header className="text-white p-4 flex justify-between items-center" style={{ backgroundColor: '#4a4e9d' }}>
                 <h1 className="text-2xl font-bold">ナノメーター</h1>
                  <button onClick={handleStartQuiz} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105">
