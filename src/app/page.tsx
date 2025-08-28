@@ -98,8 +98,8 @@ export default function App() {
     };
 
     return (
-        <div className="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center font-sans p-4">
-            <div className="w-full max-w-5xl mx-auto">
+        <div className="bg-gray-100 text-gray-800 min-h-screen flex items-center justify-center font-sans p-2 sm:p-4">
+            <div className="w-full max-w-5xl mx-auto px-2 sm:px-6">
                 {renderView()}
             </div>
         </div>
@@ -108,19 +108,19 @@ export default function App() {
 
 function HomeView({ setView }: { setView: (view: string) => void }) {
     return (
-        <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
-            <p className="text-gray-500 mb-12">リアルタイムでクイズを作成して参加しよう</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+        <div className="text-center py-8 px-2 sm:px-8">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
+            <p className="text-gray-500 mb-8 sm:mb-12">リアルタイムでクイズを作成して参加しよう</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-lg mx-auto">
                 <button
                     onClick={() => setView('create')}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-transform transform hover:scale-105 shadow-lg"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-lg sm:text-xl transition-transform transform hover:scale-105 shadow-lg w-full sm:w-auto"
                 >
                     クイズを作成
                 </button>
                 <button
                     onClick={() => setView('join')}
-                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-transform transform hover:scale-105 shadow-lg"
+                    className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-4 px-8 rounded-lg text-lg sm:text-xl transition-transform transform hover:scale-105 shadow-lg w-full sm:w-auto"
                 >
                     ゲームに参加
                 </button>
@@ -222,44 +222,44 @@ function CreateQuizView({ setView, setGameCode, user, setIsHost }: CreateQuizVie
     const currentQuestion = questions[selectedQuestionIndex];
 
     return (
-        <div className="w-full mx-auto rounded-2xl shadow-2xl overflow-hidden">
-             <header className="text-white p-4 flex justify-between items-center" style={{ backgroundColor: '#4a4e9d' }}>
-                <h1 className="text-2xl font-bold">ナノメーター</h1>
-                 <button onClick={handleStartQuiz} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105">
+        <div className="w-full mx-auto rounded-2xl shadow-2xl overflow-hidden bg-white">
+            <header className="text-white p-4 flex flex-col sm:flex-row justify-between items-center gap-2" style={{ backgroundColor: '#4a4e9d' }}>
+                <h1 className="text-xl sm:text-2xl font-bold">ナノメーター</h1>
+                <button onClick={handleStartQuiz} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 w-full sm:w-auto">
                     ゲームを開始
                 </button>
             </header>
             <div className="flex flex-col md:flex-row">
-                <div className="w-full md:w-1/5 p-4" style={{ backgroundColor: '#e0e7ff' }}>
-                    <div className="flex flex-row md:flex-col gap-3">
+                <div className="w-full md:w-1/5 p-2 sm:p-4" style={{ backgroundColor: '#e0e7ff' }}>
+                    <div className="flex flex-row md:flex-col gap-2 sm:gap-3">
                         {questions.map((q, index) => (
-                            <button key={index} onClick={() => setSelectedQuestionIndex(index)} className={`text-left p-3 rounded-lg w-full min-w-[80px] transition shadow-md ${selectedQuestionIndex === index ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'}`}>
+                            <button key={index} onClick={() => setSelectedQuestionIndex(index)} className={`text-left p-2 sm:p-3 rounded-lg w-full min-w-[60px] sm:min-w-[80px] transition shadow-md ${selectedQuestionIndex === index ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-50'}`}>
                                 問{index + 1}
                             </button>
                         ))}
-                         <button onClick={handleAddQuestion} className="mt-2 w-full p-3 rounded-lg bg-white hover:bg-gray-50 transition flex items-center justify-center text-2xl text-gray-400 shadow-md">+</button>
+                        <button onClick={handleAddQuestion} className="mt-2 w-full p-2 sm:p-3 rounded-lg bg-white hover:bg-gray-50 transition flex items-center justify-center text-xl sm:text-2xl text-gray-400 shadow-md">+</button>
                     </div>
                 </div>
-                <div className="w-full md:w-3/5 bg-white p-8 text-center flex flex-col justify-center">
-                    <input type="text" value={currentQuestion.text} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'text', e.target.value)} className="text-3xl font-bold mb-8 text-center w-full outline-none" />
+                <div className="w-full md:w-3/5 bg-white p-4 sm:p-8 text-center flex flex-col justify-center">
+                    <input type="text" value={currentQuestion.text} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'text', e.target.value)} className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center w-full outline-none" />
                     <div>
-                        <h3 className="text-xl text-gray-500 mb-4">回答選択肢：</h3>
-                        <div className="flex flex-col items-center gap-3">
+                        <h3 className="text-lg sm:text-xl text-gray-500 mb-2 sm:mb-4">回答選択肢：</h3>
+                        <div className="flex flex-col items-center gap-2 sm:gap-3">
                             {currentQuestion.answers.map((ans, i) => (
-                                <input key={i} type="text" value={ans} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, `answer-${i}`, e.target.value)} className="w-full max-w-md bg-gray-100 text-gray-500 text-center p-3 text-2xl rounded-md outline-none focus:ring-2 ring-blue-400" />
+                                <input key={i} type="text" value={ans} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, `answer-${i}`, e.target.value)} className="w-full max-w-xs sm:max-w-md bg-gray-100 text-gray-500 text-center p-2 sm:p-3 text-lg sm:text-2xl rounded-md outline-none focus:ring-2 ring-blue-400" />
                             ))}
                         </div>
                     </div>
                 </div>
-                <div className="w-full md:w-1/5 p-6 text-center" style={{ backgroundColor: '#bde0fe' }}>
-                    <h3 className="text-2xl font-bold mb-6">設定</h3>
-                    <div className="mb-6">
-                        <label className="block text-sm text-gray-700 mb-2">与えるポイント：</label>
-                        <input type="number" value={currentQuestion.points} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'points', parseInt(e.target.value))} className="w-full bg-white p-3 text-center text-xl rounded-lg shadow-md outline-none focus:ring-2 ring-blue-400" />
+                <div className="w-full md:w-1/5 p-4 sm:p-6 text-center" style={{ backgroundColor: '#bde0fe' }}>
+                    <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">設定</h3>
+                    <div className="mb-4 sm:mb-6">
+                        <label className="block text-xs sm:text-sm text-gray-700 mb-1 sm:mb-2">与えるポイント：</label>
+                        <input type="number" value={currentQuestion.points} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'points', parseInt(e.target.value))} className="w-full bg-white p-2 sm:p-3 text-center text-lg sm:text-xl rounded-lg shadow-md outline-none focus:ring-2 ring-blue-400" />
                     </div>
                     <div>
-                        <label className="block text-sm text-gray-700 mb-2">答える時間：</label>
-                        <input type="number" value={currentQuestion.time} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'time', parseInt(e.target.value))} className="w-full bg-white p-3 text-center text-xl rounded-lg shadow-md outline-none focus:ring-2 ring-blue-400" placeholder="10秒" />
+                        <label className="block text-xs sm:text-sm text-gray-700 mb-1 sm:mb-2">答える時間：</label>
+                        <input type="number" value={currentQuestion.time} onChange={(e) => handleUpdateQuestion(selectedQuestionIndex, 'time', parseInt(e.target.value))} className="w-full bg-white p-2 sm:p-3 text-center text-lg sm:text-xl rounded-lg shadow-md outline-none focus:ring-2 ring-blue-400" placeholder="10秒" />
                     </div>
                 </div>
             </div>
@@ -306,8 +306,8 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
     };
 
     return (
-        <div className="p-8 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto text-center" style={{ backgroundColor: '#bde0fe' }}>
-            <h2 className="text-xl font-bold text-gray-700 mb-6">ゲームコードを入力してください</h2>
+        <div className="p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-2xl mx-auto text-center" style={{ backgroundColor: '#bde0fe' }}>
+            <h2 className="text-lg sm:text-xl font-bold text-gray-700 mb-4 sm:mb-6">ゲームコードを入力してください</h2>
             <form onSubmit={handleJoin}>
                 <input
                     type="text"
@@ -315,12 +315,12 @@ function JoinGameView({ setView, setGameCode, user, setIsHost }: JoinGameViewPro
                     onChange={(e) => setInputCode(e.target.value)}
                     placeholder="ABCXYZ"
                     maxLength={6}
-                    className="w-full bg-white text-gray-500 text-center text-6xl font-bold p-6 rounded-lg mb-6 shadow-inner outline-none focus:ring-4 ring-blue-300 uppercase"
+                    className="w-full bg-white text-gray-500 text-center text-4xl sm:text-6xl font-bold p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 shadow-inner outline-none focus:ring-4 ring-blue-300 uppercase"
                 />
-                {error && <p className="text-red-500 mb-4">{error}</p>}
+                {error && <p className="text-red-500 mb-2 sm:mb-4">{error}</p>}
                 <button
                     type="submit"
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-transform transform hover:scale-105 shadow-lg"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-lg sm:text-xl transition-transform transform hover:scale-105 shadow-lg"
                 >
                     参加
                 </button>
@@ -368,24 +368,22 @@ function LobbyView({ setView, gameCode, isHost }: LobbyViewProps) {
     };
 
     return (
-        <div className="p-8 rounded-2xl shadow-2xl w-full max-w-2xl mx-auto text-center bg-white">
-            <h2 className="text-3xl font-bold mb-4">ゲームロビー</h2>
-            <p className="text-gray-500 mb-6">ゲームコード:</p>
-            <div className="bg-gray-200 text-4xl font-mono tracking-widest p-4 rounded-lg mb-8">{gameCode}</div>
-            
-            <h3 className="text-2xl font-bold mb-4">参加者 ({players.length})</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 min-h-[100px]">
+        <div className="p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-2xl mx-auto text-center bg-white">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-4">ゲームロビー</h2>
+            <p className="text-gray-500 mb-4 sm:mb-6">ゲームコード:</p>
+            <div className="bg-gray-200 text-2xl sm:text-4xl font-mono tracking-widest p-2 sm:p-4 rounded-lg mb-4 sm:mb-8">{gameCode}</div>
+            <h3 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">参加者 ({players.length})</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8 min-h-[60px] sm:min-h-[100px]">
                 {players.map(p => (
-                    <div key={p.uid} className="bg-blue-100 p-3 rounded-lg shadow-sm">{p.name}</div>
+                    <div key={p.uid} className="bg-blue-100 p-2 sm:p-3 rounded-lg shadow-sm text-xs sm:text-base">{p.name}</div>
                 ))}
             </div>
-
             {isHost ? (
-                <button onClick={handleStartGame} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl">
+                <button onClick={handleStartGame} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg text-lg sm:text-xl">
                     ゲームを開始！
                 </button>
             ) : (
-                <p className="text-xl text-gray-600">ホストがゲームを開始するのを待っています...</p>
+                <p className="text-base sm:text-xl text-gray-600">ホストがゲームを開始するのを待っています...</p>
             )}
         </div>
     );
@@ -500,37 +498,36 @@ function PlayerView({ gameCode, user, isHost, setView }: PlayerViewProps) {
 
     return (
         <div className="bg-white rounded-2xl shadow-2xl w-full flex flex-col h-[80vh] max-h-[700px] overflow-hidden">
-            <div className="flex-grow p-8 text-center flex flex-col justify-center relative">
-                 <div className="absolute top-4 right-4 text-right text-gray-500">
-                    <div className="text-2xl font-bold">スコア：<span className="text-green-500">{myPlayerInfo?.score || 0}</span>点</div>
-                    <div className="text-lg">残り{timeLeft}秒</div>
+            <div className="flex-grow p-4 sm:p-8 text-center flex flex-col justify-center relative">
+                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 text-right text-gray-500">
+                    <div className="text-lg sm:text-2xl font-bold">スコア：<span className="text-green-500">{myPlayerInfo?.score || 0}</span>点</div>
+                    <div className="text-base sm:text-lg">残り{timeLeft}秒</div>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">{currentQuestion.text}</h2>
-                <div className="w-full max-w-3xl mx-auto">
-                    <h3 className="text-xl text-gray-500 mb-4">回答選択肢：</h3>
-                    <div className="grid grid-cols-1 gap-3 text-2xl text-gray-600">
+                <h2 className="text-xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">{currentQuestion.text}</h2>
+                <div className="w-full max-w-xl sm:max-w-3xl mx-auto">
+                    <h3 className="text-base sm:text-xl text-gray-500 mb-2 sm:mb-4">回答選択肢：</h3>
+                    <div className="grid grid-cols-1 gap-2 sm:gap-3 text-lg sm:text-2xl text-gray-600">
                         {currentQuestion.answers.map((answer: string, index: number) => (
                             <div key={index}>{answer}</div>
                         ))}
                     </div>
                 </div>
             </div>
-
-            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ backgroundColor: '#bde0fe' }}>
+            <div className="p-4 sm:p-6 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4" style={{ backgroundColor: '#bde0fe' }}>
                 {currentQuestion.answers.map((_: string, index: number) => (
-                     <button
+                    <button
                         key={index}
                         onClick={() => handleAnswer(index)}
                         disabled={hasAnswered}
-                        className={`p-6 rounded-lg text-4xl font-bold text-gray-700 transition shadow-md ${hasAnswered ? 'bg-gray-300' : 'bg-white hover:bg-gray-50'}`}
-                     >
+                        className={`p-4 sm:p-6 rounded-lg text-2xl sm:text-4xl font-bold text-gray-700 transition shadow-md ${hasAnswered ? 'bg-gray-300' : 'bg-white hover:bg-gray-50'}`}
+                    >
                         {answerLabels[index]}
                     </button>
                 ))}
             </div>
             {isHost && (
-                <div className="p-4 bg-gray-700">
-                    <button onClick={handleNextQuestion} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg">
+                <div className="p-2 sm:p-4 bg-gray-700">
+                    <button onClick={handleNextQuestion} className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg">
                         次の問題へ
                     </button>
                 </div>
