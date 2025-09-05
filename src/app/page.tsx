@@ -109,6 +109,28 @@ export default function App() {
 function HomeView({ setView }: { setView: (view: string) => void }) {
     return (
         <div className="text-center py-8 px-2 sm:px-8">
+            <div className={`max-w-3xl mx-auto mb-8 p-6 rounded-xl border-2 shadow-lg transition-colors duration-300 bg-yellow-50 border-yellow-400 text-yellow-900`}
+        style={{ fontSize: '1.08rem', lineHeight: '1.7' }}
+      >
+        <div className="mb-2 text-lg font-bold flex items-center gap-2">
+          <span role="img" aria-label="Trophy">🏆</span>
+          <span>Announcement</span>
+        </div>
+        <div className="mb-2">
+          I am thrilled to announce that I have been selected as the winner of the 『ナノコネ コンペ形式インターンシップ』 (Nanoconnect Competition-Style Internship), hosted by 株式会社ナノコネクト (NANO CONNECT Inc.). My project, 『ナノメーター』 (<a href="https://nanometer.luqmanhadi.com" className="underline hover:text-blue-600 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">nanometer.luqmanhadi.com</a>), was chosen from over 300 submissions by university students across Japan.<br/>
+          『ナノメーター』 is a web application built with Next.js, TypeScript, Tailwind CSS, and Firebase. I am incredibly grateful for this recognition and would like to extend my sincere thanks to the team at NANO CONNECT Inc. for this valuable opportunity. This experience has further solidified my passion for front-end development and creating user-centric solutions.
+        </div>
+        <div className="border-t border-yellow-300 my-3" />
+        <div>
+          この度、株式会社ナノコネクト様主催の『ナノコネ コンペ形式インターンシップ』において、最優秀賞を受賞いたしましたことをご報告申し上げます。<br/>
+          全国300名以上の大学生の中から、私のNext.js/React.jsプロジェクト『ナノメーター』（<a href="https://nanometer.luqmanhadi.com" className="underline hover:text-blue-600 dark:hover:text-blue-300" target="_blank" rel="noopener noreferrer">https://nanometer.luqmanhadi.com</a>）を選出していただきました。このアプリケーションは、React、TypeScript、Tailwind CSS、Firebaseを用いて開発しました。<br/>
+          このような素晴らしい機会をいただき、株式会社ナノコネクトの皆様には心より感謝申し上げます。今回の経験を糧に、今後もフロントエンド開発のスキルを磨き、ユーザー中心のソリューション開発に貢献していきたいと考えております。
+        </div>
+        <div className="mt-4 flex justify-center gap-4">
+            <a href="https://github.com/luqhardy/nanoconnect-internship" className="underline hover:text-blue-600" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+            <a href="https://luqmanhadi.com" className="underline hover:text-blue-600" target="_blank" rel="noopener noreferrer">luqmanhadi.com</a>
+        </div>
+      </div>
             <h1 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: '#4a4e9d' }}>ナノメーター</h1>
             <p className="text-gray-500 mb-8 sm:mb-12">リアルタイムでクイズを作成して参加しよう</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-lg mx-auto">

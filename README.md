@@ -1,6 +1,6 @@
 
-# NanoConnect - Real-time Quiz Platform
-# ナノコネクト - リアルタイムクイズプラットフォーム
+# NanoMeter - Real-time Quiz Platform
+# ナノメーター - リアルタイムクイズプラットフォーム
 
 
 A real-time, multiplayer quiz game application built with Next.js, React, and Firebase. Users can create their own quizzes, host game lobbies, and have others join using a unique game code to compete in real-time.
